@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='utf-8'?>
+<page_content>
+<page_param>
+<type>mfolders</type>
+<sector>T</sector>
+<study_period>2025</study_period>
+<group>T25-SG12</group>
+<doc_type>TD</doc_type>
+<updated>2025-09-08</updated></page_param>
+<group_desc>
+<object_name>T25-SG12</object_name>
+<friendly_name>SG12</friendly_name>
+<ltitle_e>Performance, QoS and QoE</ltitle_e>
+<ltitle_f>Performance, QoS and QoE</ltitle_f>
+<ltitle_s>Performance, QoS and QoE</ltitle_s>
+<r_object_id>0b00004f824506c6</r_object_id></group_desc>
+<meeting_desc>
+<object_name>T25-SG12-250909</object_name>
+<friendly_name />
+<ltitle_e>Switzerland [Geneva]</ltitle_e>
+<ltitle_f>Suisse [Genève]</ltitle_f>
+<ltitle_s>Suiza [Ginebra]</ltitle_s>
+<start_date>2025-09-09</start_date>
+<end_date>2025-09-18</end_date>
+<r_object_id>0b00004f825bdd42</r_object_id></meeting_desc>
+<folder_list>
+<folder>
+<subgroup>GEN</subgroup>
+<object_name>T25-SG12-250909-TD-GEN-0292</object_name>
+<friendly_name>292-GEN</friendly_name>
+<doc_number>0292</doc_number>
+<doc_type>TD</doc_type>
+<doc_class />
+<main_source>Editors E.800</main_source>
+<reception_date>2025-09-05</reception_date>
+<meeting_name>T25-SG12-250909</meeting_name>
+<ltitle_e>Updated baseline text E.800: Definitions of terms related to quality of service</ltitle_e>
+<ltitle_f />
+<ltitle_s />
+<observation_e />
+<observation_f />
+<observation_s />
+<abstract_e />
+<abstract_f />
+<abstract_s />
+<study_questions>
+<rvalue>Q2/12</rvalue></study_questions>
+<derived_from />
+<r_link_cnt>1</r_link_cnt>
+<access_type>C</access_type>
+<r_object_id>0b00004f82767a83</r_object_id>
+<md_part />
+<static_path>/dms_inf/itu-t/md/25/sg12/td/250909/GEN</static_path></folder>
+<folder>
+<subgroup>GEN</subgroup>
+<object_name>T25-SG12-250909-TD-GEN-0291</object_name>
+<friendly_name>291-GEN</friendly_name>
+<doc_number>0291</doc_number>
+<doc_type>TD</doc_type>
+<doc_class />
+<main_source>Editors G.1000</main_source>
+<reception_date>2025-09-05</reception_date>
+<meeting_name>T25-SG12-250909</meeting_name>
+<ltitle_e>Updated baseline text G.1000: Telecommunications quality of service: A framework and definitions</ltitle_e>
+<ltitle_f />
+<ltitle_s />
+<observation_e />
+<observation_f />
+<observation_s />
+<abstract_e />
+<abstract_f />
+<abstract_s />
+<study_questions>
+<rvalue>Q2/12</rvalue></study_questions>
+<derived_from />
+<r_link_cnt>1</r_link_cnt>
+<access_type>C</access_type>
+<r_object_id>0b00004f82767a82</r_object_id>
+<md_part />
+<static_path>/dms_inf/itu-t/md/25/sg12/td/250909/GEN</static_path></folder>
+<folder>
+<subgroup>GEN</subgroup>
+<object_name>T25-SG12-250909-TD-GEN-0290</object_name>
+<friendly_name>290-GEN</friendly_name>
+<doc_number>0290</doc_number>
+<doc_type>TD</doc_type>
+<doc_class />
+<main_source>Rapporteur Q9/12</main_source>
+<reception_date>2025-09-04</reception_date>
+<meeting_name>T25-SG12-250909</meeting_name>
+<ltitle_e>Performance results of current P.SAMD model candidate</ltitle_e>
+<ltitle_f />
+<ltitle_s />
+<observation_e />
+<observation_f />
+<observation_s />
+<abstract_e />
+<abstract_f />
+<abstract_s />
+<study_questions>
+<rvalue>Q9/12</rvalue></study_questions>
+<derived_from />
+<r_link_cnt>1</r_link_cnt>
+<access_type>C</access_type>
+<r_object_id>0b00004f82764c23</r_object_id>
+<md_part />
+<static_path>/dms_inf/itu-t/md/25/sg12/td/250909/GEN</static_path></folder>
+</folder_list></page_content>

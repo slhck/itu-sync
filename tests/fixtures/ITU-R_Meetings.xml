@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dataroot><ITU-R_Meetings>
+<Meeting_code>ITU-R SG 4</Meeting_code>
+<Start_meeting_date>2024-04-23T00:00:00</Start_meeting_date>
+<Meeting_place_date>ITU-R SG 4, WP 4A/B/C, Geneva, April-May 2024</Meeting_place_date>
+<workingFolder>/ITU-R SG4/2023</workingFolder>
+<FTP_root>ftp://reg_inputLogin:url_encode(reg_inputPassword)@confsynch.itu.int</FTP_root>
+<Included_folder_1>/r/2023/sg04/docs/</Included_folder_1>
+<Included_folder_2>/r/2023/wp4a/docs/</Included_folder_2>
+<Included_folder_3>/r/2023/wp4b/docs/</Included_folder_3>
+<Included_folder_4>/r/2023/wp4c/docs/</Included_folder_4>
+<Display_date_1>2024-04-23</Display_date_1>
+<Display_date_2>2024-05-01 - 2024-05-09</Display_date_2>
+<Display_date_3>2024-04-29 - 2024-05-03</Display_date_3>
+<Display_date_4>2024-04-24 - 2024-04-30</Display_date_4>
+<Start_date_1>2022-09-24T00:00:00</Start_date_1>
+<Start_date_2>2022-09-23T00:00:00</Start_date_2>
+<Start_date_3>2022-09-17T00:00:00</Start_date_3>
+<Start_date_4>2022-09-14T00:00:00</Start_date_4>
+<Frame_src_ADM_1>/menu/sg-list.html?SG=ITU-R SG 4&amp;DE=Satellite Services&amp;TY=Administrative Documents&amp;DT=0000&amp;XF=../docs-dms/R23-SG04-ADM.xml&amp;FI=doc_number&amp;FO=../docs-dms/SG 4/</Frame_src_ADM_1>
+<Frame_src_C_1>/menu/sg-list.html?SG=ITU-R SG 4&amp;DE=Satellite Services&amp;TY=Contributions&amp;DT=0000&amp;XF=../docs-dms/R23-SG04-C.xml&amp;FI=doc_number&amp;FO=../docs-dms/SG 4/</Frame_src_C_1>
+<Frame_src_INF_1>/menu/sg-list.html?SG=ITU-R SG 4&amp;DE=Satellite Services&amp;TY=Information Documents&amp;DT=0000&amp;XF=../docs-dms/R23-SG04-INF.xml&amp;FI=doc_number&amp;FO=../docs-dms/SG 4/</Frame_src_INF_1>
+<Frame_src_TD_1>/menu/sg-list.html?SG=ITU-R SG 4&amp;DE=Satellite Services&amp;TY=Temporary Documents&amp;DT=0000&amp;XF=../docs-dms/R23-SG04-240423-TD.xml&amp;FI=doc_number&amp;FO=../docs-dms/SG 4/</Frame_src_TD_1>
+<Frame_src_ADM_2>/menu/sg-list.html?SG=ITU-R WP4A&amp;DE=Satellite Services&amp;TY=Administrative Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4A-ADM.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4A/</Frame_src_ADM_2>
+<Frame_src_C_2>/menu/sg-list.html?SG=ITU-R WP4A&amp;DE=Satellite Services&amp;TY=Contributions&amp;DT=0000&amp;XF=../docs-dms/R23-WP4A-C.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4A/</Frame_src_C_2>
+<Frame_src_INF_2>/menu/sg-list.html?SG=ITU-R WP4A&amp;DE=Satellite Services&amp;TY=Information Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4A-INF.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4A/</Frame_src_INF_2>
+<Frame_src_TD_2>/menu/sg-list.html?SG=ITU-R WP4A&amp;DE=Satellite Services&amp;TY=Temporary Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4A-240501-TD.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4A/</Frame_src_TD_2>
+<Frame_src_ADM_3>/menu/sg-list.html?SG=ITU-R WP4B&amp;DE=Satellite Services&amp;TY=Administrative Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4B-ADM.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4B/</Frame_src_ADM_3>
+<Frame_src_C_3>/menu/sg-list.html?SG=ITU-R WP4B&amp;DE=Satellite Services&amp;TY=Contributions&amp;DT=0000&amp;XF=../docs-dms/R23-WP4B-C.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4B/</Frame_src_C_3>
+<Frame_src_INF_3>/menu/sg-list.html?SG=ITU-R WP4B&amp;DE=Satellite Services&amp;TY=Information Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4B-INF.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4B/</Frame_src_INF_3>
+<Frame_src_TD_3>/menu/sg-list.html?SG=ITU-R WP4B&amp;DE=Satellite Services&amp;TY=Temporary Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4B-240429-TD.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4B/</Frame_src_TD_3>
+<Frame_src_ADM_4>/menu/sg-list.html?SG=ITU-R WP4C&amp;DE=Satellite Services&amp;TY=Administrative Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4C-ADM.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4C/</Frame_src_ADM_4>
+<Frame_src_C_4>/menu/sg-list.html?SG=ITU-R WP4C&amp;DE=Satellite Services&amp;TY=Contributions&amp;DT=0000&amp;XF=../docs-dms/R23-WP4C-C.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4C/</Frame_src_C_4>
+<Frame_src_INF_4>/menu/sg-list.html?SG=ITU-R WP4C&amp;DE=Satellite Services&amp;TY=Information Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4C-INF.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4C/</Frame_src_INF_4>
+<Frame_src_TD_4>/menu/sg-list.html?SG=ITU-R WP4C&amp;DE=Satellite Services&amp;TY=Temporary Documents&amp;DT=0000&amp;XF=../docs-dms/R23-WP4C-240424-TD.xml&amp;FI=doc_number&amp;FO=../docs-dms/WP 4C/</Frame_src_TD_4>
+<ITU_Sector>ITU Radiocommunication Sector</ITU_Sector>
+<SG_No_Period>ITU-R Study Group 4 (Study Period 2023-2027)</SG_No_Period>
+<SG_Title>Satellite Services</SG_Title>
+<SG_Email>rsg4@itu.int</SG_Email>
+<SG_Homepage>https://www.itu.int/en/ITU-R/study-groups/rsg4/Pages/default.aspx</SG_Homepage>
+<Foldername_1>SG 4</Foldername_1>
+<Foldername_2>WP 4A</Foldername_2>
+<Foldername_3>WP 4B</Foldername_3>
+<Foldername_4>WP 4C</Foldername_4>
+<Foldername_5>-</Foldername_5>
+</ITU-R_Meetings>
+</dataroot>

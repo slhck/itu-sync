@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dataroot><ITU-T_Meetings>
+<Meeting_code>ITU-T SG 12</Meeting_code>
+<Start_meeting_date>2025-01-14T00:00:00</Start_meeting_date>
+<Meeting_place_date>ITU-T SG 12, Geneva, 14-23 January 2025</Meeting_place_date>
+<Contribution_start_date>2024-04-25T00:00:00</Contribution_start_date>
+<TD_date>250114</TD_date>
+<FTP_root>ftp://reg_inputLogin:url_encode(reg_inputPassword)@confsynch.itu.int</FTP_root>
+<FTP_path>/t/2025/sg12/docs</FTP_path>
+<EPUB_FTP_path>/EPUB/TSB/ITUT-SP2022</EPUB_FTP_path>
+<setLocalPathSG>/docs-dms</setLocalPathSG>
+<Frame_src_C>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE=Meeting from 2025-01-14 to 2025-01-23 held in Switzerland [Geneva]&amp;TY=Contributions&amp;DT=T25-SG12-250114&amp;XF=../docs-dms/T25-SG12-C.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_C>
+<Frame_src_COL>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Collective Letters&amp;DT=ALL&amp;XF=../docs-dms/T25-SG12-COL.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_COL>
+<Frame_src_R>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Reports&amp;DT=ALL&amp;XF=../docs-dms/T25-SG12-R.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_R>
+<Frame_src_TD_GEN>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE=Meeting from 2025-01-14 to 2025-01-23 held in Switzerland [Geneva]&amp;TY=GEN&amp;DT=GEN&amp;XF=../docs-dms/T25-SG12-250114-TD.xml&amp;FI=subgroup&amp;FO=../docs-dms/250114/td/</Frame_src_TD_GEN>
+<ITU_Sector>ITU Telecommunication Standardization Sector</ITU_Sector>
+<SG_No_Period>ITU-T Study Group 12 (Study Period 2025-2028)</SG_No_Period>
+<SG_Title>Performance, QoS and QoE</SG_Title>
+<SG_Email>tsbsg12@itu.int</SG_Email>
+<SG_Homepage>https://www.itu.int/en/ITU-T/studygroups/2025-2028/12/Pages/default.aspx</SG_Homepage>
+<workingFolder>/ITU-T SG12/2025</workingFolder>
+<Contributions>Contributions</Contributions>
+<TD_Gen>TD GEN</TD_Gen>
+<TD_Plen>no</TD_Plen>
+<TD_WP1>no</TD_WP1>
+<TD_WP2>no</TD_WP2>
+<TD_WP3>no</TD_WP3>
+<TD_WP4>no</TD_WP4>
+<Excluded_Files_C>none.htm</Excluded_Files_C>
+</ITU-T_Meetings>
+<ITU-T_Meetings>
+<Meeting_code>ITU-T SG 12</Meeting_code>
+<Start_meeting_date>2025-09-09T00:00:00</Start_meeting_date>
+<Meeting_place_date>ITU-T SG 12, Geneva, 9-18 September 2025</Meeting_place_date>
+<Contribution_start_date>2025-01-23T00:00:00</Contribution_start_date>
+<TD_date>250909</TD_date>
+<FTP_root>ftp://reg_inputLogin:url_encode(reg_inputPassword)@confsynch.itu.int</FTP_root>
+<FTP_path>/t/2025/sg12/docs</FTP_path>
+<EPUB_FTP_path>/EPUB/TSB/ITUT-SP2022</EPUB_FTP_path>
+<setLocalPathSG>/docs-dms</setLocalPathSG>
+<Frame_src_C>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Contributions&amp;DT=T25-SG12-250909&amp;XF=../docs-dms/T25-SG12-C.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_C>
+<Frame_src_COL>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Collective Letters&amp;DT=ALL&amp;XF=../docs-dms/T25-SG12-COL.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_COL>
+<Frame_src_R>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Reports&amp;DT=ALL&amp;XF=../docs-dms/T25-SG12-R.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_R>
+<Frame_src_TD_GEN>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=GEN&amp;DT=GEN&amp;XF=../docs-dms/T25-SG12-250909-TD.xml&amp;FI=subgroup&amp;FO=../docs-dms/250909/td/</Frame_src_TD_GEN>
+<ITU_Sector>ITU Telecommunication Standardization Sector</ITU_Sector>
+<SG_No_Period>ITU-T Study Group 12 (Study Period 2025-2028)</SG_No_Period>
+<SG_Title>Performance, QoS and QoE</SG_Title>
+<SG_Email>tsbsg12@itu.int</SG_Email>
+<SG_Homepage>https://www.itu.int/en/ITU-T/studygroups/2025-2028/12/Pages/default.aspx</SG_Homepage>
+<workingFolder>/ITU-T SG12/2025</workingFolder>
+<Contributions>Contributions</Contributions>
+<TD_Gen>TD GEN</TD_Gen>
+<TD_Plen>no</TD_Plen>
+<TD_WP1>no</TD_WP1>
+<TD_WP2>no</TD_WP2>
+<TD_WP3>no</TD_WP3>
+<TD_WP4>no</TD_WP4>
+<Excluded_Files_C>none.htm</Excluded_Files_C>
+</ITU-T_Meetings>
+<ITU-T_Meetings>
+<Meeting_code>ITU-T SG 12</Meeting_code>
+<Start_meeting_date>2026-06-09T00:00:00</Start_meeting_date>
+<Meeting_place_date>ITU-T SG 12, Geneva, 9-17 June 2026</Meeting_place_date>
+<Contribution_start_date>2025-09-18T00:00:00</Contribution_start_date>
+<TD_date>260609</TD_date>
+<FTP_root>ftp://reg_inputLogin:url_encode(reg_inputPassword)@confsynch.itu.int</FTP_root>
+<FTP_path>/t/2025/sg12/docs</FTP_path>
+<EPUB_FTP_path>/EPUB/TSB/ITUT-SP2022</EPUB_FTP_path>
+<setLocalPathSG>/docs-dms</setLocalPathSG>
+<Frame_src_C>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Contributions&amp;DT=T25-SG12-260609&amp;XF=../docs-dms/T25-SG12-C.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_C>
+<Frame_src_COL>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Collective Letters&amp;DT=ALL&amp;XF=../docs-dms/T25-SG12-COL.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_COL>
+<Frame_src_R>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=Reports&amp;DT=ALL&amp;XF=../docs-dms/T25-SG12-R.xml&amp;FI=meeting_name&amp;FO=../docs-dms/</Frame_src_R>
+<Frame_src_TD_GEN>CList.html?SG=ITU-T SG 12 - Performance, QoS and QoE&amp;DE= &amp;TY=GEN&amp;DT=GEN&amp;XF=../docs-dms/T25-SG12-260609-TD.xml&amp;FI=subgroup&amp;FO=../docs-dms/260609/td/</Frame_src_TD_GEN>
+<ITU_Sector>ITU Telecommunication Standardization Sector</ITU_Sector>
+<SG_No_Period>ITU-T Study Group 12 (Study Period 2025-2028)</SG_No_Period>
+<SG_Title>Performance, QoS and QoE</SG_Title>
+<SG_Email>tsbsg12@itu.int</SG_Email>
+<SG_Homepage>https://www.itu.int/en/ITU-T/studygroups/2025-2028/12/Pages/default.aspx</SG_Homepage>
+<workingFolder>/ITU-T SG12/2025</workingFolder>
+<Contributions>Contributions</Contributions>
+<TD_Gen>TD GEN</TD_Gen>
+<TD_Plen>no</TD_Plen>
+<TD_WP1>no</TD_WP1>
+<TD_WP2>no</TD_WP2>
+<TD_WP3>no</TD_WP3>
+<TD_WP4>no</TD_WP4>
+<Excluded_Files_C>none.htm</Excluded_Files_C>
+</ITU-T_Meetings>
+</dataroot>
