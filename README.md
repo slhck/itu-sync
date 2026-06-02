@@ -1,6 +1,6 @@
 # itu-sync
 
-A small Python tool that replaces the broken `ITU-Sync` macOS app. It lets you pick an ITU meeting and work with its documents from the terminal:
+A small Python tool that replaces the `ITU-Sync` desktop app. It lets you pick an ITU meeting and work with its documents from the terminal:
 
 - Sync meetings — refresh the list of meetings from ITU and browse it.
 - Sync documents — download a meeting's documents (English) over FTPS, optionally restricted to one or more document types.
@@ -22,6 +22,11 @@ Done! Read on to find out more.
 > [!CAUTION]
 >
 > This software is provided as-is as a general-purpose tool for interacting with the ITU document services. The author provides this tool solely as software code and has no control over how it is used, no relationship with ITU, and no obligation to enforce any third-party terms of service or licenses. You, the user, are solely and independently responsible for ensuring that your use of this software complies with all applicable laws, regulations, and third-party terms of service, including those of ITU. By using this software, you agree to hold the author harmless from any claims, damages, or liabilities arising from your use of the software or your interactions with ITU's services.
+
+## Reqiurements
+
+- Python 3.10 or later
+- An ITU TIES account
 
 ## Installation
 
