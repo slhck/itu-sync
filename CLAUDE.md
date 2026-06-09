@@ -19,7 +19,10 @@ concern:
 - `select.py` — resolve `--sector/--group/--latest/--meeting` to one meeting;
   the interactive picker.
 - `doctypes.py` — the type registry (C/R/COL/TD) and per-sector layout. The one
-  place that knows where each type lives under `FTP_path`.
+  place that knows where each type lives under `FTP_path`. Also defines the
+  virtual `LS` type: liaison statements are TDs marked `LS/i`/`LS/o` by title
+  (`liaison_marking`), not a folder, so they mirror the TD tree filtered to that
+  subset.
 - `paths.py` — resolve a meeting to its local base and remote index path.
 - `language.py` — the English/language filename filter.
 - `ftps.py` — the `ImplicitFTPS` subclass, recursive `walk()`, single-file fetch.

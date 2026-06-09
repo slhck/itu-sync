@@ -17,7 +17,7 @@ from pathlib import Path
 from itu_sync import catalog, doctypes, ftps, paths
 from itu_sync.ftps import FTPClient
 from itu_sync.language import DEFAULT_LANGUAGES, keep_file
-from itu_sync.types import DocRecord, FileTask, Meeting, SyncSummary
+from itu_sync.types import DocRecord, FileTask, Meeting, MirrorRoot, SyncSummary
 
 # (status, task) where status is one of: downloaded, skipped, failed
 ProgressCb = Callable[[str, FileTask], None]
@@ -50,30 +50,77 @@ def build_plan(
     languages: frozenset[str] = DEFAULT_LANGUAGES,
     *,
     on_walk: Callable[[str], None] | None = None,
+    on_warning: Callable[[str], None] | None = None,
+    fetch_url: IndexFetcher = catalog.download,
 ) -> SyncPlan:
-    """Walk the selected remote roots, filter, and split into download/skip."""
+    """Walk the selected remote roots, filter, and split into download/skip.
+
+    Liaison statements (``LS``) are a metadata-defined subset of TDs: when a
+    requested type is ``LS``, the TD index XML is consulted to learn which TD
+    document numbers are liaison statements, and only those files are mirrored
+    (into the normal TD location). ``fetch_url`` fetches that index and is
+    injectable for testing; ``on_warning`` reports an index that could not be
+    loaded.
+    """
     base = paths.local_base(drive, meeting)
     to_download: list[FileTask] = []
     skipped: list[FileTask] = []
+    seen_local: set[Path] = set()
 
-    for root in doctypes.mirror_roots(meeting, types):
+    def add_file(root: MirrorRoot, remote_path: str, size: int) -> None:
+        name = remote_path.rsplit("/", 1)[-1]
+        if not keep_file(name, languages):
+            return
+        rel = remote_path[len(root.remote_root) :].lstrip("/")
+        local = (
+            base / root.local_relprefix / rel if root.local_relprefix else base / rel
+        )
+        if local in seen_local:
+            return
+        seen_local.add(local)
+        task = FileTask(remote_path=remote_path, local_path=local, size=size)
+        if local.exists() and local.stat().st_size == size:
+            skipped.append(task)
+        else:
+            to_download.append(task)
+
+    if types is None:
+        folder_specs: list[tuple[str, str | None]] | None = None
+        liaison_specs: list[tuple[str, str | None]] = []
+    else:
+        liaison_specs = [s for s in types if s[0] == doctypes.LIAISON_CODE]
+        folder_specs = [s for s in types if s[0] != doctypes.LIAISON_CODE]
+
+    # Plain folder types (everything except LS). ``folder_specs is None`` means
+    # "no type filter at all" -> mirror the whole tree; an empty list means the
+    # only requested type was LS, so there is no folder root to walk.
+    if folder_specs is None or folder_specs:
+        for root in doctypes.mirror_roots(meeting, folder_specs):
+            if on_walk:
+                on_walk(root.remote_root)
+            for remote_path, size in ftps.walk(ftp, root.remote_root):
+                add_file(root, remote_path, size)
+
+    # Liaison statements: the TD tree restricted to liaison document numbers.
+    for _code, direction in liaison_specs:
+        numbers = _liaison_numbers(ftp, meeting, direction, fetch_url)
+        if numbers is None:
+            if on_warning:
+                on_warning(
+                    "Could not load the TD index, so liaison statements cannot "
+                    "be identified; skipping LS."
+                )
+            continue
+        root = doctypes.liaison_mirror_root(meeting)
         if on_walk:
             on_walk(root.remote_root)
         for remote_path, size in ftps.walk(ftp, root.remote_root):
             name = remote_path.rsplit("/", 1)[-1]
-            if not keep_file(name, languages):
+            m = _DOC_NUMBER.search(name)
+            if not m or int(m.group(1)) not in numbers:
                 continue
-            rel = remote_path[len(root.remote_root) :].lstrip("/")
-            local = (
-                base / root.local_relprefix / rel
-                if root.local_relprefix
-                else base / rel
-            )
-            task = FileTask(remote_path=remote_path, local_path=local, size=size)
-            if local.exists() and local.stat().st_size == size:
-                skipped.append(task)
-            else:
-                to_download.append(task)
+            add_file(root, remote_path, size)
+
     return SyncPlan(to_download=to_download, skipped=skipped)
 
 
@@ -177,11 +224,18 @@ def parse_index_xml(data: bytes, type_code: str) -> list[DocRecord]:
     root = ET.fromstring(data)
     rows: list[DocRecord] = []
     for folder in root.iter("folder"):
+        title = (folder.findtext("ltitle_e") or "").strip()
+        row_type = type_code
+        if type_code == "TD":
+            # Liaison statements are TDs; surface their LS/i, LS/o marking.
+            marking = doctypes.liaison_marking(title)
+            if marking:
+                row_type = marking
         rows.append(
             DocRecord(
-                type=type_code,
+                type=row_type,
                 number=(folder.findtext("doc_number") or "").strip(),
-                title=(folder.findtext("ltitle_e") or "").strip(),
+                title=title,
                 source=(folder.findtext("main_source") or "").strip(),
                 date=(folder.findtext("reception_date") or "").strip(),
                 subgroup=(folder.findtext("subgroup") or "").strip(),
@@ -219,6 +273,35 @@ def _load_index_bytes(
     except Exception:  # noqa: BLE001
         return None
     return data or None
+
+
+def _liaison_numbers(
+    ftp: FTPClient,
+    meeting: Meeting,
+    direction: str | None,
+    fetch_url: IndexFetcher,
+) -> set[int] | None:
+    """Return the TD document numbers that are liaison statements.
+
+    Reads the TD index XML (the only place that records the ``LS/i`` / ``LS/o``
+    marking) and returns the document numbers, optionally filtered to one
+    direction (``"i"`` or ``"o"``). Returns ``None`` if the index is
+    unavailable, so the caller can tell "no liaisons" from "could not
+    determine".
+    """
+    data = _load_index_bytes(ftp, meeting, "TD", fetch_url)
+    if data is None:
+        return None
+    wanted = f"LS/{direction}" if direction else None
+    numbers: set[int] = set()
+    for folder in ET.fromstring(data).iter("folder"):
+        marking = doctypes.liaison_marking(folder.findtext("ltitle_e") or "")
+        if marking is None or (wanted and marking != wanted):
+            continue
+        num = (folder.findtext("doc_number") or "").strip()
+        if num.isdigit():
+            numbers.add(int(num))
+    return numbers
 
 
 def _rows_from_listing(
@@ -276,17 +359,32 @@ def list_documents(
     seen: set[str] = set()
     rows: list[DocRecord] = []
     from_index = True
-    for code, subgroup in selected:
+    for code, qualifier in selected:
         if code in seen:
             continue
         seen.add(code)
+        if code == doctypes.LIAISON_CODE:
+            # Liaison statements live in the TD index, marked by their title.
+            data = _load_index_bytes(ftp, meeting, "TD", fetch_url)
+            if data is None:
+                # A directory listing cannot tell liaisons from other TDs.
+                from_index = False
+                continue
+            wanted = f"LS/{qualifier}" if qualifier else None
+            for row in parse_index_xml(data, "TD"):
+                if not row["type"].startswith("LS"):
+                    continue
+                if wanted and row["type"] != wanted:
+                    continue
+                rows.append(row)
+            continue
         data = _load_index_bytes(ftp, meeting, code, fetch_url)
         if data is not None:
             for row in parse_index_xml(data, code):
-                if subgroup and row["subgroup"].lower() != subgroup.lower():
+                if qualifier and row["subgroup"].lower() != qualifier.lower():
                     continue
                 rows.append(row)
         else:
             from_index = False
-            rows.extend(_rows_from_listing(ftp, meeting, code, subgroup))
+            rows.extend(_rows_from_listing(ftp, meeting, code, qualifier))
     return rows, from_index

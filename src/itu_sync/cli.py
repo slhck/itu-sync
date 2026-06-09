@@ -335,7 +335,8 @@ def meetings(
     "type_spec",
     type=str,
     default=None,
-    help="Comma-separated types (C,R,COL,TD). Default: all.",
+    help="Comma-separated types (C,R,COL,TD,LS). LS = liaison statements; "
+    "use LS/i / LS/o for incoming/outgoing. Default: all.",
 )
 @click.option(
     "--lang",
@@ -373,6 +374,11 @@ def sync_cmd(
         output.print_info(
             f"  remote {root.remote_root}  ->  local {base / root.local_relprefix}"
         )
+    if any(code == doctypes.LIAISON_CODE for code, _ in types):
+        output.print_info(
+            "  (LS = liaison statements: the TD subset whose title is marked "
+            "LS/i or LS/o)"
+        )
 
     user, password = _credentials(ctx, user_override)
 
@@ -386,7 +392,14 @@ def sync_cmd(
         output.print_error(f"Connection failed: {exc}")
         sys.exit(1)
     try:
-        plan = sync.build_plan(scan_ftp, chosen, ctx.drive, types, languages)
+        plan = sync.build_plan(
+            scan_ftp,
+            chosen,
+            ctx.drive,
+            types,
+            languages,
+            on_warning=output.print_warning,
+        )
     finally:
         try:
             scan_ftp.quit()
@@ -478,7 +491,8 @@ main.add_command(sync_cmd, name="sync")
     "type_spec",
     type=str,
     default=None,
-    help="Comma-separated types (C,R,COL,TD). Default: all.",
+    help="Comma-separated types (C,R,COL,TD,LS). LS = liaison statements; "
+    "use LS/i / LS/o for incoming/outgoing. Default: all.",
 )
 @click.option("--user", "user_override", type=str, default=None, help="TIES account.")
 @click.option("--json", "as_json", is_flag=True, help="Output JSON.")

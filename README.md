@@ -127,6 +127,18 @@ List a meeting's TDs without downloading:
 itu-sync list --group SG12 --latest --type TD
 ```
 
+Liaison statements are Temporary Documents marked `LS/i` (incoming) or `LS/o` (outgoing) in their title. The `LS` type selects just those, and you can narrow to one direction with `LS/i` or `LS/o`:
+
+```bash
+# all liaison statements of the latest SG12 meeting
+itu-sync list --group SG12 --latest --type LS
+
+# download only the incoming liaison statements
+itu-sync sync --group SG12 --latest --type LS/i
+```
+
+A plain `--type TD` (or the default, which lists everything) still includes liaison statements; it just shows them marked `LS/i` or `LS/o` instead of `TD`.
+
 ### Changing the config
 
 Re-run the guided setup, or set any value individually:

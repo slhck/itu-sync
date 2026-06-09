@@ -71,6 +71,45 @@ def test_parse_type_spec_rejects_unknown() -> None:
         parse_type_spec("XYZ")
 
 
+def test_parse_type_spec_liaison() -> None:
+    assert parse_type_spec("LS") == [("LS", None)]
+    assert parse_type_spec("LS/i") == [("LS", "i")]
+    assert parse_type_spec("ls/o") == [("LS", "o")]
+    assert parse_type_spec("C,LS/i") == [("C", None), ("LS", "i")]
+
+
+def test_parse_type_spec_rejects_bad_liaison_direction() -> None:
+    import pytest
+
+    with pytest.raises(ValueError):
+        parse_type_spec("LS/x")
+
+
+def test_parse_type_spec_liaison_rejects_colon() -> None:
+    import pytest
+
+    # The liaison direction uses a slash (LS/i), not a colon.
+    with pytest.raises(ValueError, match="slash"):
+        parse_type_spec("LS:i")
+
+
+def test_liaison_marking() -> None:
+    assert doctypes.liaison_marking("LS/i on incoming foo") == "LS/i"
+    assert doctypes.liaison_marking("LS/o on outgoing bar") == "LS/o"
+    assert doctypes.liaison_marking("LS/o/r reply to baz") == "LS/o"
+    assert doctypes.liaison_marking("Updated baseline text E.800") is None
+
+
+def test_liaison_mirror_root_is_td_tree(sg12_june_2026) -> None:
+    roots = mirror_roots(sg12_june_2026, [("LS", None)])
+    assert len(roots) == 1
+    # Liaison statements mirror the TD tree (filtered to the LS subset later).
+    assert roots[0].remote_root == "/t/2025/sg12/docs/260609/td/ties"
+    assert roots[0].local_relprefix == "260609/td/ties"
+    assert roots[0].label == "LS"
+    assert mirror_roots(sg12_june_2026, [("LS", "o")])[0].label == "LS/o"
+
+
 def test_itu_r_ignores_types(catalog_dir) -> None:
     from itu_sync import catalog
 
