@@ -54,6 +54,33 @@ class Context:
 pass_context = click.make_pass_decorator(Context, ensure=True)
 
 
+def _make_streams_blocking() -> None:
+    """Clear ``O_NONBLOCK`` on stdout/stderr if a parent process set it.
+
+    Some terminals hand the process non-blocking standard streams. A large
+    piped listing (e.g. ``itu-sync list ... | grep``) then overruns the pipe
+    buffer and its flush fails with ``BlockingIOError`` (``EAGAIN``) — which,
+    unlike a broken pipe, click does not handle. Resetting the streams to
+    blocking makes the write wait for the reader instead. Best effort and
+    POSIX-only; a no-op where ``fcntl`` is unavailable.
+    """
+    try:
+        import fcntl
+    except ImportError:
+        return
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            fd = stream.fileno()
+            flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+        except (AttributeError, ValueError, OSError):
+            continue
+        if flags & os.O_NONBLOCK:
+            try:
+                fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+            except OSError:
+                continue
+
+
 @click.group()
 @click.version_option(version=__version__, prog_name="itu-sync")
 @click.option(
@@ -70,6 +97,9 @@ pass_context = click.make_pass_decorator(Context, ensure=True)
 @pass_context
 def main(ctx: Context, no_refresh: bool, drive: str | None, verify_cert: bool) -> None:
     """itu-sync — sync ITU meeting documents from the terminal."""
+    # Runs before any subcommand produces output, so a piped listing flushes
+    # without a BlockingIOError on terminals that hand us non-blocking streams.
+    _make_streams_blocking()
     ctx.no_refresh = no_refresh
     ctx.verify_cert = verify_cert
     ctx.drive_override = drive
