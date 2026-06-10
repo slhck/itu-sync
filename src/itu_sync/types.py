@@ -68,6 +68,8 @@ class FileTask:
     remote_path: str
     local_path: Path
     size: int
+    mtime: float | None = None
+    """Remote modification time (Unix timestamp), if the listing provided one."""
 
 
 class DocRecord(TypedDict):

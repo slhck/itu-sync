@@ -67,7 +67,9 @@ def build_plan(
     skipped: list[FileTask] = []
     seen_local: set[Path] = set()
 
-    def add_file(root: MirrorRoot, remote_path: str, size: int) -> None:
+    def add_file(
+        root: MirrorRoot, remote_path: str, size: int, mtime: float | None
+    ) -> None:
         name = remote_path.rsplit("/", 1)[-1]
         if not keep_file(name, languages):
             return
@@ -78,13 +80,17 @@ def build_plan(
         if local in seen_local:
             return
         seen_local.add(local)
-        task = FileTask(remote_path=remote_path, local_path=local, size=size)
-        if local.exists() and local.stat().st_size == size:
+        task = FileTask(
+            remote_path=remote_path, local_path=local, size=size, mtime=mtime
+        )
+        if _local_is_current(local, size, mtime):
             skipped.append(task)
         else:
             to_download.append(task)
 
-    if types is None:
+    # No types at all (None or empty: the CLI passes [] when --type is not
+    # given) means "no type filter" -> mirror the whole tree.
+    if not types:
         folder_specs: list[tuple[str, str | None]] | None = None
         liaison_specs: list[tuple[str, str | None]] = []
     else:
@@ -98,8 +104,8 @@ def build_plan(
         for root in doctypes.mirror_roots(meeting, folder_specs):
             if on_walk:
                 on_walk(root.remote_root)
-            for remote_path, size in ftps.walk(ftp, root.remote_root):
-                add_file(root, remote_path, size)
+            for remote_path, size, mtime in ftps.walk(ftp, root.remote_root):
+                add_file(root, remote_path, size, mtime)
 
     # Liaison statements: the TD tree restricted to liaison document numbers.
     for _code, direction in liaison_specs:
@@ -114,23 +120,52 @@ def build_plan(
         root = doctypes.liaison_mirror_root(meeting)
         if on_walk:
             on_walk(root.remote_root)
-        for remote_path, size in ftps.walk(ftp, root.remote_root):
+        for remote_path, size, mtime in ftps.walk(ftp, root.remote_root):
             name = remote_path.rsplit("/", 1)[-1]
             m = _DOC_NUMBER.search(name)
             if not m or int(m.group(1)) not in numbers:
                 continue
-            add_file(root, remote_path, size)
+            add_file(root, remote_path, size, mtime)
 
     return SyncPlan(to_download=to_download, skipped=skipped)
 
 
+# Tolerance when comparing remote vs. local modification times, absorbing
+# filesystem timestamp rounding.
+_MTIME_SLACK = 2.0
+
+
+def _local_is_current(local: Path, size: int, mtime: float | None) -> bool:
+    """Whether the local copy can be skipped.
+
+    It must exist, match the remote size, and not be older than the remote
+    modification time (when the listing provided one). Downloads stamp the
+    local file with the remote mtime (see :func:`_download_one`), so a file
+    later replaced in place on the server — even with the same size — shows a
+    newer remote mtime and is downloaded again.
+    """
+    try:
+        st = local.stat()
+    except OSError:
+        return False
+    if st.st_size != size:
+        return False
+    return mtime is None or mtime <= st.st_mtime + _MTIME_SLACK
+
+
 def _download_one(ftp: FTPClient, task: FileTask) -> int:
-    """Download a single file atomically. Returns bytes written."""
+    """Download a single file atomically. Returns bytes written.
+
+    The local file's modification time is set to the remote one (when known),
+    so later plans can tell a server-side replacement from an unchanged file.
+    """
     task.local_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = task.local_path.with_name(task.local_path.name + ".part")
     try:
         with open(tmp, "wb") as fh:
             ftp.retrbinary(f"RETR {task.remote_path}", fh.write)
+        if task.mtime is not None:
+            os.utime(tmp, (task.mtime, task.mtime))
         os.replace(tmp, task.local_path)
     except BaseException:
         tmp.unlink(missing_ok=True)
@@ -315,7 +350,7 @@ def _rows_from_listing(
     rows: list[DocRecord] = []
     seen_numbers: set[str] = set()
     for root in doctypes.mirror_roots(meeting, [(code, subgroup)]):
-        for remote_path, _size in ftps.walk(ftp, root.remote_root):
+        for remote_path, _size, _mtime in ftps.walk(ftp, root.remote_root):
             name = remote_path.rsplit("/", 1)[-1]
             if not keep_file(name, DEFAULT_LANGUAGES):
                 continue

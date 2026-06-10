@@ -13,6 +13,7 @@ import io
 import re
 import ssl
 from collections.abc import Callable, Iterator
+from datetime import datetime, timezone
 from typing import Protocol
 
 CONFSYNCH_HOST = "confsynch.itu.int"
@@ -123,7 +124,17 @@ def check_login(
         ftp.close()
 
 
-def _mlsd_walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int]]:
+def _mlsd_mtime(facts: dict[str, str]) -> float | None:
+    """Parse the MLSD ``modify`` fact (``YYYYMMDDHHMMSS[.sss]``, UTC)."""
+    raw = (facts.get("modify") or "").partition(".")[0]
+    try:
+        stamp = datetime.strptime(raw, "%Y%m%d%H%M%S")
+    except ValueError:
+        return None
+    return stamp.replace(tzinfo=timezone.utc).timestamp()
+
+
+def _mlsd_walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int, float | None]]:
     entries = list(ftp.mlsd(root))
     for name, facts in entries:
         if name in (".", ".."):
@@ -141,30 +152,38 @@ def _mlsd_walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int]]:
                 # failure on the root the caller asked for still propagates.
                 continue
         elif entry_type == "file":
-            yield path, int(facts.get("size", "0") or 0)
+            yield path, int(facts.get("size", "0") or 0), _mlsd_mtime(facts)
 
 
 # IIS DOS-style LIST line, e.g.
 #   "11-01-24  12:51PM       <DIR>          c"
 #   "01-08-25  04:16PM               163363 T25-SG12-C-0001-E.docx"
 _DOS_LINE = re.compile(
-    r"^\d{2}-\d{2}-\d{2}\s+\d{1,2}:\d{2}[AP]M\s+(<DIR>|\d+)\s+(.+?)\s*$"
+    r"^(\d{2}-\d{2}-\d{2}\s+\d{1,2}:\d{2}[AP]M)\s+(<DIR>|\d+)\s+(.+?)\s*$"
 )
 
 
-def _parse_list_line(line: str) -> tuple[str, bool, int] | None:
-    """Parse one LIST line into ``(name, is_dir, size)``.
+def _parse_list_line(line: str) -> tuple[str, bool, int, float | None] | None:
+    """Parse one LIST line into ``(name, is_dir, size, mtime)``.
 
     Handles the IIS DOS-style format used by ``confsynch.itu.int`` and falls
     back to Unix ``ls -l`` style for portability. Returns ``None`` for lines
-    that are neither (totals, blanks).
+    that are neither (totals, blanks). The DOS timestamp carries the file's
+    modification time (minute precision, server-local time, interpreted as
+    local time); the Unix fallback yields no mtime — its date formats are too
+    ambiguous to parse reliably.
     """
     m = _DOS_LINE.match(line)
     if m:
-        marker, name = m.group(1), m.group(2)
+        stamp, marker, name = m.group(1), m.group(2), m.group(3)
+        try:
+            mtime = datetime.strptime(" ".join(stamp.split()), "%m-%d-%y %I:%M%p")
+        except ValueError:
+            mtime = None
+        mtime_epoch = mtime.timestamp() if mtime else None
         if marker == "<DIR>":
-            return name, True, 0
-        return name, False, int(marker)
+            return name, True, 0, mtime_epoch
+        return name, False, int(marker), mtime_epoch
 
     parts = line.split(maxsplit=8)
     if len(parts) >= 9 and parts[0][0] in "-dl":
@@ -174,18 +193,18 @@ def _parse_list_line(line: str) -> tuple[str, bool, int] | None:
             size = int(parts[4])
         except ValueError:
             size = 0
-        return name, is_dir, size
+        return name, is_dir, size, None
     return None
 
 
-def _list_walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int]]:
+def _list_walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int, float | None]]:
     lines: list[str] = []
     ftp.dir(root, lines.append)
     for line in lines:
         parsed = _parse_list_line(line.rstrip("\r\n"))
         if parsed is None:
             continue
-        name, is_dir, size = parsed
+        name, is_dir, size, mtime = parsed
         if name in (".", ".."):
             continue
         path = f"{root.rstrip('/')}/{name}"
@@ -198,13 +217,16 @@ def _list_walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int]]:
                 # failure on the root the caller asked for still propagates.
                 continue
         else:
-            yield path, size
+            yield path, size, mtime
 
 
-def walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int]]:
-    """Recursively yield ``(remote_path, size)`` for every file under ``root``.
+def walk(ftp: FTPClient, root: str) -> Iterator[tuple[str, int, float | None]]:
+    """Recursively yield ``(remote_path, size, mtime)`` for every file under
+    ``root``.
 
-    Prefers ``MLSD`` (IIS supports it); falls back to ``LIST`` parsing.
+    Prefers ``MLSD``; the live IIS server rejects it, so in practice the
+    ``LIST`` fallback is used. ``mtime`` is a Unix timestamp, or ``None`` when
+    the listing carries no usable modification time.
     """
     try:
         yield from _mlsd_walk(ftp, root)

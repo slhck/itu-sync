@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ftplib
+from datetime import datetime
 
 import pytest
 
@@ -11,22 +12,33 @@ from itu_sync.ftps import _parse_list_line, walk
 
 def test_parses_iis_dos_file_line() -> None:
     line = "01-08-25  04:16PM               163363 T25-SG12-C-0001!!MSW-A.docx"
-    assert _parse_list_line(line) == ("T25-SG12-C-0001!!MSW-A.docx", False, 163363)
+    parsed = _parse_list_line(line)
+    assert parsed is not None
+    name, is_dir, size, mtime = parsed
+    assert (name, is_dir, size) == ("T25-SG12-C-0001!!MSW-A.docx", False, 163363)
+    assert mtime is not None
+    assert datetime.fromtimestamp(mtime) == datetime(2025, 1, 8, 16, 16)
 
 
 def test_parses_iis_dos_dir_line() -> None:
     line = "11-01-24  12:51PM       <DIR>          c"
-    assert _parse_list_line(line) == ("c", True, 0)
+    parsed = _parse_list_line(line)
+    assert parsed is not None
+    name, is_dir, size, mtime = parsed
+    assert (name, is_dir, size) == ("c", True, 0)
+    assert mtime is not None
+    assert datetime.fromtimestamp(mtime) == datetime(2024, 11, 1, 12, 51)
 
 
 def test_parses_unix_ls_line() -> None:
+    # The Unix fallback yields no mtime; its date formats are ambiguous.
     line = "-rw-r--r--   1 owner group   12345 Jun  2 10:00 file-E.docx"
-    assert _parse_list_line(line) == ("file-E.docx", False, 12345)
+    assert _parse_list_line(line) == ("file-E.docx", False, 12345, None)
 
 
 def test_unix_dir_line() -> None:
     line = "drwxr-xr-x   2 owner group    4096 Jun  2 10:00 ties"
-    assert _parse_list_line(line) == ("ties", True, 4096)
+    assert _parse_list_line(line) == ("ties", True, 4096, None)
 
 
 def test_ignores_unrecognized_lines() -> None:
@@ -82,7 +94,7 @@ def _tree() -> dict[str, list]:
 
 def test_walk_skips_inaccessible_subdir() -> None:
     ftp = _WalkFTP(_tree(), deny={"/docs/pub/pub"})
-    files = sorted(p for p, _ in walk(ftp, "/docs"))
+    files = sorted(p for p, _size, _mtime in walk(ftp, "/docs"))
     assert files == ["/docs/ties/real-E.docx"]
 
 

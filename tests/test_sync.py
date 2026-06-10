@@ -67,12 +67,26 @@ def _fake_ftp() -> FakeFTP:
     }
     files = {f"{root}/{name}": data for name, data in contents.items()}
     listing = {
+        # Parent directories, so a whole-tree walk from FTP_path works too.
+        "/t/2025/sg12/docs": [("c", {"type": "dir"})],
+        "/t/2025/sg12/docs/c": [("ties", {"type": "dir"})],
         root: [
             (name, {"type": "file", "size": str(len(data))})
             for name, data in contents.items()
-        ]
+        ],
     }
     return FakeFTP(listing, files)
+
+
+def test_build_plan_empty_types_mirrors_everything(tmp_path: Path) -> None:
+    # The CLI passes [] when --type is not given; that must mean "no filter"
+    # (mirror the whole tree), not "nothing requested". Regression test for the
+    # bug where sync reported 0 files without --type.
+    ftp = _fake_ftp()
+    for types in ([], None):
+        plan = sync.build_plan(ftp, _meeting(), tmp_path, types)
+        names = {t.local_path.name for t in plan.to_download}
+        assert "T25-SG12-C-0001-E.docx" in names
 
 
 def test_build_plan_filters_language(tmp_path: Path) -> None:
@@ -107,6 +121,58 @@ def test_download_and_skip_by_size(tmp_path: Path) -> None:
     plan2 = sync.build_plan(_fake_ftp(), meeting, tmp_path, [("C", None)])
     assert plan2.to_download == []
     assert len(plan2.skipped) == 2
+
+
+def _fake_ftp_with_mtime(modify: str) -> FakeFTP:
+    """One English doc whose MLSD facts carry a ``modify`` timestamp (UTC)."""
+    root = "/t/2025/sg12/docs/c/ties"
+    name = "T25-SG12-C-0001-E.docx"
+    data = b"english-doc"
+    files = {f"{root}/{name}": data}
+    listing = {
+        root: [(name, {"type": "file", "size": str(len(data)), "modify": modify})]
+    }
+    return FakeFTP(listing, files)
+
+
+def test_redownloads_when_remote_is_newer(tmp_path: Path) -> None:
+    meeting = _meeting()
+
+    # First sync stamps the local file with the remote modification time.
+    plan = sync.build_plan(
+        _fake_ftp_with_mtime("20260601120000"), meeting, tmp_path, [("C", None)]
+    )
+    assert len(plan.to_download) == 1
+    sync.download_plan(plan, lambda: _fake_ftp_with_mtime("20260601120000"), workers=1)
+
+    # Unchanged remote -> skipped.
+    plan2 = sync.build_plan(
+        _fake_ftp_with_mtime("20260601120000"), meeting, tmp_path, [("C", None)]
+    )
+    assert plan2.to_download == []
+    assert len(plan2.skipped) == 1
+
+    # Replaced in place on the server (same size, newer mtime) -> re-download.
+    plan3 = sync.build_plan(
+        _fake_ftp_with_mtime("20260609090000"), meeting, tmp_path, [("C", None)]
+    )
+    assert len(plan3.to_download) == 1
+    assert plan3.skipped == []
+
+
+def test_keeps_local_file_newer_than_remote(tmp_path: Path) -> None:
+    # A local copy downloaded before mtime stamping existed has its download
+    # time as mtime; an older remote stamp must not trigger a re-download.
+    meeting = _meeting()
+    local = tmp_path / "ITU-T SG12/2025/docs-dms/c/ties/T25-SG12-C-0001-E.docx"
+    local.parent.mkdir(parents=True)
+    local.write_bytes(b"english-doc")  # same size as the remote file
+
+    plan = sync.build_plan(
+        _fake_ftp_with_mtime("20200101000000"), meeting, tmp_path, [("C", None)]
+    )
+    assert plan.to_download == []
+    assert len(plan.skipped) == 1
 
 
 def test_dry_run_writes_nothing(tmp_path: Path) -> None:
