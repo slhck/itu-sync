@@ -81,6 +81,10 @@ class DocRecord(TypedDict):
     source: str
     date: str
     subgroup: str
+    meeting_name: str
+    """The meeting a document is filed under, e.g. ``T25-SG12-250909``; its
+    trailing ``yymmdd`` is the meeting's :attr:`Meeting.td_date`. The C/R/COL
+    indexes are study-period-wide, so this is what scopes a row to one meeting."""
 
 
 @dataclass

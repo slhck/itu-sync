@@ -192,6 +192,7 @@ def test_parse_td_index() -> None:
     assert first["number"]
     assert first["title"]
     assert first["subgroup"]
+    assert first["meeting_name"] == "T25-SG12-250909"
 
 
 def _offline(url: str) -> bytes:
@@ -217,6 +218,40 @@ def test_list_documents_uses_web_index() -> None:
     assert captured == [
         "https://www.itu.int/dms_pages/itu-t/md/25/SG12/td/T25-SG12-260609-TD.xml"
     ]
+
+
+# A Contributions index as ITU serves it: study-period-wide, listing docs for
+# several meetings, each tagged with its meeting_name. _meeting() is the June
+# 2026 meeting (td_date 260609); only C-0085 below belongs to it.
+C_INDEX_TWO_MEETINGS = (
+    b"<?xml version='1.0' encoding='utf-8'?>\n"
+    b"<page_content><folder_list>"
+    b"<folder><subgroup></subgroup><doc_number>0068</doc_number>"
+    b"<doc_type>C</doc_type><main_source>Acme (Wonderland)</main_source>"
+    b"<reception_date>2025-09-01</reception_date>"
+    b"<meeting_name>T25-SG12-250909</meeting_name>"
+    b"<ltitle_e>A contribution for the September 2025 meeting</ltitle_e></folder>"
+    b"<folder><subgroup></subgroup><doc_number>0085</doc_number>"
+    b"<doc_type>C</doc_type><main_source>Acme (Wonderland)</main_source>"
+    b"<reception_date>2026-05-27</reception_date>"
+    b"<meeting_name>T25-SG12-260609</meeting_name>"
+    b"<ltitle_e>A contribution for the June 2026 meeting</ltitle_e></folder>"
+    b"</folder_list></page_content>"
+)
+
+
+def test_list_documents_scopes_contributions_to_meeting() -> None:
+    # The C index is study-period-wide; list must show only the selected
+    # meeting's contributions, matched on meeting_name's trailing yymmdd.
+    rows, from_index = sync.list_documents(
+        _fake_ftp(),
+        _meeting(),
+        [("C", None)],
+        fetch_url=lambda _url: C_INDEX_TWO_MEETINGS,
+    )
+    assert from_index is True
+    assert [r["number"] for r in rows] == ["0085"]
+    assert rows[0]["meeting_name"] == "T25-SG12-260609"
 
 
 def test_list_documents_falls_back_to_listing() -> None:

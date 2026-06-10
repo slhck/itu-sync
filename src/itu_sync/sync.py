@@ -253,8 +253,8 @@ def parse_index_xml(data: bytes, type_code: str) -> list[DocRecord]:
     """Parse a per-type index XML into document rows.
 
     The TD index uses repeated ``<folder>`` elements with ``doc_number``,
-    ``ltitle_e``, ``main_source``, ``reception_date``, ``subgroup``; the
-    C/R/COL indexes share a similar ``<folder>`` schema.
+    ``ltitle_e``, ``main_source``, ``reception_date``, ``subgroup``,
+    ``meeting_name``; the C/R/COL indexes share a similar ``<folder>`` schema.
     """
     root = ET.fromstring(data)
     rows: list[DocRecord] = []
@@ -274,6 +274,7 @@ def parse_index_xml(data: bytes, type_code: str) -> list[DocRecord]:
                 source=(folder.findtext("main_source") or "").strip(),
                 date=(folder.findtext("reception_date") or "").strip(),
                 subgroup=(folder.findtext("subgroup") or "").strip(),
+                meeting_name=(folder.findtext("meeting_name") or "").strip(),
             )
         )
     return rows
@@ -281,6 +282,22 @@ def parse_index_xml(data: bytes, type_code: str) -> list[DocRecord]:
 
 # Document number embedded in a filename, e.g. "...-C-0073!R1!MSW-E.docx" -> 0073.
 _DOC_NUMBER = re.compile(r"-(\d{3,5})(?:[-!.]|$)")
+
+
+def _belongs_to_meeting(meeting_name: str, td_date: str) -> bool:
+    """Whether an index row's ``meeting_name`` is for the selected meeting.
+
+    The C/R/COL index XMLs are study-period-wide: one ``T25-SG12-C.xml`` lists
+    every contribution to the study group across the whole period, each tagged
+    with the meeting it was filed under in a ``meeting_name`` like
+    ``T25-SG12-250909`` whose trailing ``yymmdd`` is the meeting's
+    :attr:`~itu_sync.types.Meeting.td_date`. Matching on it scopes ``list`` to
+    one meeting instead of the whole period. A row with no ``meeting_name`` (the
+    directory-listing fallback), or a meeting with no ``td_date``, is kept.
+    """
+    if not td_date or not meeting_name:
+        return True
+    return meeting_name.rsplit("-", 1)[-1] == td_date
 
 
 def _load_index_bytes(
@@ -369,6 +386,7 @@ def _rows_from_listing(
                     source="",
                     date="",
                     subgroup=sub,
+                    meeting_name="",
                 )
             )
     rows.sort(key=lambda r: r["number"])
@@ -417,6 +435,13 @@ def list_documents(
         if data is not None:
             for row in parse_index_xml(data, code):
                 if qualifier and row["subgroup"].lower() != qualifier.lower():
+                    continue
+                # The C/R/COL index is study-period-wide, so scope it to the
+                # selected meeting. The TD index URL already carries the
+                # meeting date, so its rows are all for this meeting.
+                if code != "TD" and not _belongs_to_meeting(
+                    row["meeting_name"], meeting.td_date
+                ):
                     continue
                 rows.append(row)
         else:
