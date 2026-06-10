@@ -1,3 +1,12 @@
+## [0.2.1] - 2026-06-10
+
+### 🐛 Bug Fixes
+
+- *(sync)* Mirror without --type, detect changes
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.2.1
 ## [0.2.0] - 2026-06-09
 
 ### 🚀 Features
