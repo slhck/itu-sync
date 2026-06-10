@@ -1,6 +1,6 @@
 [project]
 name = "itu-sync"
-version = "0.2.1"
+version = "0.2.2"
 description = "Sync ITU meeting documents from the terminal over implicit FTPS"
 readme = "README.md"
 authors = [
