@@ -1,3 +1,13 @@
+## [0.2.3] - 2026-10-11
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update dependencies with known vulnerabilities
+
+### ⚙️ Miscellaneous Tasks
+
+- Test on Python 3.10, 3.14 and 3.15
+- Bump version to 0.2.3
 ## [0.2.2] - 2026-06-10
 
 ### 🐛 Bug Fixes
